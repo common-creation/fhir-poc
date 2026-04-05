@@ -1,6 +1,6 @@
 // フォームフィールドにフォーカスした際にFHIR仕様解説を表示するサイドパネル
 
-import { FhirFieldReference } from '../../fhir/references';
+import type { FhirFieldReference } from '../../fhir/references';
 
 interface SidePanelProps {
   reference: FhirFieldReference | null;

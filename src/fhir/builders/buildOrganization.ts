@@ -2,7 +2,7 @@
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-organization.html
 // HOPDコード(医療機関コード)仕様: http://jpfhir.jp/fhir/core/IdSystem/insurance-medical-institution-no
 
-import { OrganizationFormData } from '../types';
+import type { OrganizationFormData } from '../types';
 
 export function buildOrganization(data: OrganizationFormData, id: string): object {
   return {

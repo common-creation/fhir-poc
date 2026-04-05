@@ -2,7 +2,7 @@
 // 仕様: https://jpfhir.jp/fhir/clins/igv1/StructureDefinition-JP-Bundle-eReferral.html
 // Composition仕様: https://jpfhir.jp/fhir/clins/igv1/StructureDefinition-JP-Composition-eReferral.html
 
-import { ReferralFormData } from '../types';
+import type { ReferralFormData } from '../types';
 import { buildPatient } from './buildPatient';
 import { buildPractitioner } from './buildPractitioner';
 import { buildOrganization } from './buildOrganization';

@@ -2,7 +2,7 @@
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-condition.html
 // ICD-10コード体系: http://hl7.org/fhir/sid/icd-10
 
-import { ConditionFormData } from '../types';
+import type { ConditionFormData } from '../types';
 
 const CLINICAL_STATUS_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-clinical';
 

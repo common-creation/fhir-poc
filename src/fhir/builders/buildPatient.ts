@@ -1,7 +1,7 @@
 // JP_Patient プロファイルに基づくPatientリソース生成
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-patient.html
 
-import { PatientFormData } from '../types';
+import type { PatientFormData } from '../types';
 
 export function buildPatient(data: PatientFormData, patientId: string): object {
   return {

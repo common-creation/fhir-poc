@@ -1,4 +1,4 @@
-import { ObservationFormData } from '../../fhir/types';
+import type { ObservationFormData } from '../../fhir/types';
 import { OBSERVATION_PRESETS } from '../../fhir/sampleData';
 import { FieldWithHelp } from '../common/FieldWithHelp';
 

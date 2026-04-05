@@ -1,4 +1,4 @@
-import { ReferralFormData } from './types';
+import type { ReferralFormData } from './types';
 
 // 医学知識の参照例として実際のデータを記載
 // 傷病名ICD-10コード参照: https://www.mhlw.go.jp/toukei/sippei/

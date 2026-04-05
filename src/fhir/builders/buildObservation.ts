@@ -3,7 +3,7 @@
 // LOINCコード体系: https://loinc.org/
 // UCUM単位体系: http://unitsofmeasure.org
 
-import { ObservationFormData } from '../types';
+import type { ObservationFormData } from '../types';
 
 export function buildObservation(data: ObservationFormData, patientRef: string): object {
   return {

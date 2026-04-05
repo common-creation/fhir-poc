@@ -1,4 +1,4 @@
-import { AllergyFormData } from '../../fhir/types';
+import type { AllergyFormData } from '../../fhir/types';
 import { FieldWithHelp } from '../common/FieldWithHelp';
 
 const inputClass = 'border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400';

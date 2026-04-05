@@ -2,7 +2,7 @@
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-medicationrequest.html
 // YJコード(薬価基準収載医薬品コード): urn:oid:1.2.392.100495.20.1.73
 
-import { MedicationFormData } from '../types';
+import type { MedicationFormData } from '../types';
 
 export function buildMedicationRequest(data: MedicationFormData, patientRef: string): object {
   return {

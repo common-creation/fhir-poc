@@ -1,7 +1,7 @@
 // JP_AllergyIntolerance プロファイルに基づくAllergyIntoleranceリソース生成
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-allergyintolerance.html
 
-import { AllergyFormData } from '../types';
+import type { AllergyFormData } from '../types';
 
 export function buildAllergyIntolerance(data: AllergyFormData, patientRef: string): object {
   return {

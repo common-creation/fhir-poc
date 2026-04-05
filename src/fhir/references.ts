@@ -17,7 +17,7 @@ export interface FhirFieldReference {
   mustSupport: boolean;
   description: string;
   fhirType: string;
-  example: object;
+  example: object | string;
 }
 
 export const FHIR_REFERENCES: Record<string, FhirFieldReference> = {

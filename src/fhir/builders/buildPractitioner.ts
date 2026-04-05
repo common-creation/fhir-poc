@@ -1,7 +1,7 @@
 // JP_Practitioner プロファイルに基づくPractitionerリソース生成
 // 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-practitioner.html
 
-import { PractitionerFormData } from '../types';
+import type { PractitionerFormData } from '../types';
 
 export function buildPractitioner(data: PractitionerFormData, id: string): object {
   return {
