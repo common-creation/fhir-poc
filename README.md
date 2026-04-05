@@ -1,3 +1,9 @@
+
+# Github page 
+[https://common-creation.github.io/fhir-poc/](https://common-creation.github.io/fhir-poc/)
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
