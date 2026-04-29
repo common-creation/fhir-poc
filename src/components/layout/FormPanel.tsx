@@ -10,6 +10,7 @@ import { HistorySection } from '../sections/HistorySection';
 import { AllergySection } from '../sections/AllergySection';
 import { ObservationSection } from '../sections/ObservationSection';
 import { MedicationSection } from '../sections/MedicationSection';
+import { MedWellImportSection } from '../sections/MedWellImportSection';
 
 // アコーディオンセクション共通コンポーネント
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -71,6 +72,12 @@ export function FormPanel({ onFocus, onGenerate }: Props) {
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
+        <Section title="📄 Med-Well インポート（PDFデータから変換）">
+          <MedWellImportSection
+            onImport={data => setForm(data)}
+            onFocus={onFocus}
+          />
+        </Section>
         <Section title="患者情報 / Patient">
           <PatientSection data={form.patient} onChange={p => setForm(f => ({ ...f, patient: p }))} onFocus={onFocus} />
         </Section>
