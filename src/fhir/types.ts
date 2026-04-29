@@ -6,7 +6,9 @@ export interface PatientFormData {
   nameKana: string;        // Patient.name[1].text - カナ氏名
   birthDate: string;       // Patient.birthDate - ISO8601形式 (YYYY-MM-DD)
   gender: 'male' | 'female' | 'other' | 'unknown'; // Patient.gender
-  patientId: string;       // Patient.identifier.value
+  patientId: string;       // Patient.identifier.value (被保険者ID)
+  address?: string;        // Patient.address.text
+  postalCode?: string;     // Patient.address.postalCode
 }
 
 export interface PractitionerFormData {
@@ -21,6 +23,12 @@ export interface OrganizationFormData {
   address?: string;        // Organization.address.text
 }
 
+export interface ReferralFromData {
+  practitioner: PractitionerFormData;
+  organization: OrganizationFormData;
+  department?: string;     // 診療科名（Composition.extension用）
+}
+
 // Condition.clinicalStatus のコード値
 // 参照: https://hl7.org/fhir/R4/valueset-condition-clinical.html
 export type ConditionClinicalStatus = 'active' | 'resolved' | 'inactive';
@@ -31,7 +39,8 @@ export type ConditionCategory = 'chief-complaint' | 'past-history';
 export interface ConditionFormData {
   id: string;              // 内部管理用UUID
   name: string;            // Condition.code.text - 傷病名
-  icd10Code?: string;      // Condition.code.coding[0].code - ICD-10コード
+  icd10Code?: string;      // Condition.code.coding - ICD-10コード
+  medisCode?: string;      // Condition.code.coding - MEDISキー番号（JP_Condition_eCS必須）
   clinicalStatus: ConditionClinicalStatus; // Condition.clinicalStatus
   category: ConditionCategory;
   onsetDate?: string;      // Condition.onsetDateTime
@@ -75,10 +84,7 @@ export interface MedicationFormData {
 // フォーム全体のデータ構造
 export interface ReferralFormData {
   patient: PatientFormData;
-  referralFrom: {
-    practitioner: PractitionerFormData;
-    organization: OrganizationFormData;
-  };
+  referralFrom: ReferralFromData;
   referralTo: {
     practitioner: PractitionerFormData;
     organization: OrganizationFormData;
@@ -89,4 +95,5 @@ export interface ReferralFormData {
   allergies: AllergyFormData[];
   observations: ObservationFormData[];
   medications: MedicationFormData[];
+  eventStart?: string;     // Composition.event.period.start - 診療開始日
 }

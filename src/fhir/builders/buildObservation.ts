@@ -6,11 +6,17 @@
 import type { ObservationFormData } from '../types';
 
 export function buildObservation(data: ObservationFormData, patientRef: string): object {
+  const now = new Date().toISOString();
   return {
     resourceType: 'Observation',
     id: data.id,
     meta: {
-      profile: ['http://jpfhir.jp/fhir/core/StructureDefinition/JP_Observation_VitalSigns'],
+      lastUpdated: now,
+      profile: ['http://jpfhir.jp/fhir/eCS/StructureDefinition/JP_Observation_eCS'],
+    },
+    text: {
+      status: 'generated',
+      div: `<div xmlns="http://www.w3.org/1999/xhtml">${data.displayName}: ${data.value} ${data.unit}</div>`,
     },
     status: 'final',
     category: [
@@ -34,7 +40,7 @@ export function buildObservation(data: ObservationFormData, patientRef: string):
       ],
       text: data.displayName,
     },
-    subject: { reference: `Patient/${patientRef}` },
+    subject: { reference: `urn:uuid:${patientRef}` },
     valueQuantity: {
       value: parseFloat(data.value),
       unit: data.unit,

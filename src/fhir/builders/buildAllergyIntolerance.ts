@@ -4,11 +4,17 @@
 import type { AllergyFormData } from '../types';
 
 export function buildAllergyIntolerance(data: AllergyFormData, patientRef: string): object {
+  const now = new Date().toISOString();
   return {
     resourceType: 'AllergyIntolerance',
     id: data.id,
     meta: {
-      profile: ['http://jpfhir.jp/fhir/core/StructureDefinition/JP_AllergyIntolerance'],
+      lastUpdated: now,
+      profile: ['http://jpfhir.jp/fhir/eCS/StructureDefinition/JP_AllergyIntolerance_eCS'],
+    },
+    text: {
+      status: 'generated',
+      div: `<div xmlns="http://www.w3.org/1999/xhtml">${data.substance}</div>`,
     },
     clinicalStatus: {
       coding: [
@@ -23,7 +29,7 @@ export function buildAllergyIntolerance(data: AllergyFormData, patientRef: strin
     // criticality: low | high | unable-to-assess
     criticality: data.criticality,
     code: { text: data.substance },
-    patient: { reference: `Patient/${patientRef}` },
+    patient: { reference: `urn:uuid:${patientRef}` },
     ...(data.manifestation || data.severity
       ? {
           reaction: [

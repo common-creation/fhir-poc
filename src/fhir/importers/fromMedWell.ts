@@ -82,6 +82,10 @@ export interface MedWellReferralData {
   pastHistory?: string;
   /** 主訴・症状 例: "腹痛" */
   chiefComplaint?: string;
+  /** 主訴のMEDIS標準病名管理番号 例: "20075383"（腹痛症）
+   * MEDIS病名マスタ5.16版から主訴に対応するコードを設定する
+   * 未設定時は buildCondition でフォールバックコード ZZZ99999 が使われ FHIR検証エラーになる */
+  chiefComplaintMedisCode?: string;
   /** 症状経過（現病歴） */
   historyOfPresentIllness?: string;
   /** 確認事項（備考） */
@@ -149,11 +153,12 @@ function parsePastHistory(pastHistory?: string): ConditionFormData[] {
  * 参照: JP_Condition https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-condition.html
  * 傷病名セクション(code:340)に最低1件必須
  */
-function parseChiefComplaint(chiefComplaint?: string): ConditionFormData[] {
+function parseChiefComplaint(chiefComplaint?: string, medisCode?: string): ConditionFormData[] {
   if (!chiefComplaint || chiefComplaint.trim() === '') return [];
   return [{
     id: crypto.randomUUID(),
     name: chiefComplaint.trim(),
+    ...(medisCode ? { medisCode } : {}),
     clinicalStatus: 'active' as ConditionClinicalStatus,
     category: 'chief-complaint' as const,
   }];
@@ -178,8 +183,10 @@ function parseChiefComplaint(chiefComplaint?: string): ConditionFormData[] {
 export function fromMedWell(data: MedWellReferralData): ReferralFormData {
   // 主訴（chief-complaint）と既往歴（past-history）を結合してconditions配列を構築
   // JP-CLINSでは傷病名セクション(340)に1件以上必須
+  // MEDISコードはデータに含まれないため省略（buildConditionでZZZ99999として扱われるが、
+  // 本番運用時はMEDIS標準病名マスタから正しいコードを付与すること）
   const conditions: ConditionFormData[] = [
-    ...parseChiefComplaint(data.chiefComplaint),
+    ...parseChiefComplaint(data.chiefComplaint, data.chiefComplaintMedisCode),
     ...parsePastHistory(data.pastHistory),
   ];
 
@@ -189,11 +196,13 @@ export function fromMedWell(data: MedWellReferralData): ReferralFormData {
     // JP_Patient: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-patient.html
     // ----------------------------------------------------------------
     patient: {
-      nameText: data.patientName.replace(/\s*様\s*$/, '').trim(), // "牟田和貴 様" → "牟田和貴"
+      nameText: data.patientName.replace(/\s*様\s*$/, '').trim(),
       nameKana: data.patientNameKana ?? '',
-      birthDate: toFhirDate(data.patientBirthDate),              // "1987年02月01日" → "1987-02-01"
-      gender: toFhirGender(data.patientGender),                  // "男性" → "male"
+      birthDate: toFhirDate(data.patientBirthDate),
+      gender: toFhirGender(data.patientGender),
       patientId: data.patientId ?? '',
+      address: data.patientAddress?.replace(/^〒\S+\s*/, '').trim(),
+      postalCode: data.patientAddress?.match(/〒?(\d{3}-?\d{4})/)?.[1],
     },
 
     // ----------------------------------------------------------------
@@ -321,6 +330,7 @@ export const MEDWELL_SAMPLE: MedWellReferralData = {
   purpose: '検査・診断',
   pastHistory: 'なし',
   chiefComplaint: '腹痛',
+  chiefComplaintMedisCode: '20075383', // MEDIS標準病名マスタ5.16版: 腹痛症
   historyOfPresentIllness: '腹痛のため薬を処方しましたが要検査の懸念あり',
   notes: 'Med-Well（本システム）から診療情報提供書を作成・印刷する',
 };

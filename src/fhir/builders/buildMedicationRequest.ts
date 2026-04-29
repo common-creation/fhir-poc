@@ -5,11 +5,17 @@
 import type { MedicationFormData } from '../types';
 
 export function buildMedicationRequest(data: MedicationFormData, patientRef: string): object {
+  const now = new Date().toISOString();
   return {
     resourceType: 'MedicationRequest',
     id: data.id,
     meta: {
-      profile: ['http://jpfhir.jp/fhir/core/StructureDefinition/JP_MedicationRequest'],
+      lastUpdated: now,
+      profile: ['http://jpfhir.jp/fhir/eCS/StructureDefinition/JP_MedicationRequest_eCS'],
+    },
+    text: {
+      status: 'generated',
+      div: `<div xmlns="http://www.w3.org/1999/xhtml">${data.name}</div>`,
     },
     status: 'active',
     intent: 'order',
@@ -28,7 +34,7 @@ export function buildMedicationRequest(data: MedicationFormData, patientRef: str
         : {}),
       text: data.name,
     },
-    subject: { reference: `Patient/${patientRef}` },
+    subject: { reference: `urn:uuid:${patientRef}` },
     dosageInstruction: [
       {
         text: [data.dose, data.frequency].filter(Boolean).join(' '),

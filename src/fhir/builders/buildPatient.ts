@@ -1,47 +1,70 @@
-// JP_Patient プロファイルに基づくPatientリソース生成
-// 仕様: https://jpfhir.jp/fhir/core/1.2.0/StructureDefinition-jp-patient.html
+// JP_Patient_eCS プロファイルに基づくPatientリソース生成
+// 仕様: https://jpfhir.jp/fhir/eCS/StructureDefinition/JP_Patient_eCS
 
 import type { PatientFormData } from '../types';
 
+function splitName(fullName: string): { family: string; given: string[] } {
+  const parts = fullName.trim().split(/\s+/);
+  const family = parts[0] ?? fullName;
+  // given は必須（JP_Patient_eCS）。姓のみの場合は空文字を使わず姓全体をgivenにも入れる
+  const given = parts[1] ? [parts[1]] : [family];
+  return { family, given };
+}
+
 export function buildPatient(data: PatientFormData, patientId: string): object {
+  const now = new Date().toISOString();
+
+  // 公式サンプル準拠: name[0]にIDE(漢字)拡張を付与
+  const officialName: Record<string, unknown> = {
+    extension: [{
+      url: 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-representation',
+      valueCode: 'IDE',
+    }],
+    use: 'official',
+    text: data.nameText,
+    ...splitName(data.nameText),
+  };
+
   return {
     resourceType: 'Patient',
     id: patientId,
     meta: {
-      profile: ['http://jpfhir.jp/fhir/core/StructureDefinition/JP_Patient'],
+      lastUpdated: now,
+      profile: ['http://jpfhir.jp/fhir/eCS/StructureDefinition/JP_Patient_eCS'],
     },
-    identifier: [
-      {
-        // 医療機関の患者番号。systemはOID形式で医療機関コードを含む
-        system: `urn:oid:1.2.392.100495.20.3.51.1${data.patientId}`,
-        value: data.patientId,
-      },
-    ],
+    text: {
+      status: 'generated',
+      div: `<div xmlns="http://www.w3.org/1999/xhtml">${data.nameText}</div>`,
+    },
+    // JP_Patient_eCS必須: 被保険者識別子 (JP_Insurance_memberID)
+    identifier: [{
+      system: 'http://jpfhir.jp/fhir/clins/Idsystem/JP_Insurance_memberID',
+      value: data.patientId || '99999999:999:999:99',
+    }],
+    active: true,
     name: [
-      {
-        // 漢字氏名 (use: official)
-        use: 'official',
-        text: data.nameText,
-        family: data.nameText.split(' ')[0] ?? data.nameText,
-        given: [data.nameText.split(' ')[1] ?? ''],
-      },
+      officialName,
       ...(data.nameKana
-        ? [
-            {
-              // カナ氏名: iso21090-EN-representation拡張でSYL(Syllabic)を指定
-              extension: [
-                {
-                  url: 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-representation',
-                  valueCode: 'SYL',
-                },
-              ],
-              use: 'official',
-              text: data.nameKana,
-            },
-          ]
+        ? [{
+            extension: [{
+              url: 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-representation',
+              valueCode: 'SYL',
+            }],
+            use: 'official',
+            text: data.nameKana,
+            given: [data.nameKana],
+          }]
         : []),
     ],
     gender: data.gender,
     birthDate: data.birthDate,
+    // JP_Patient_eCS必須: address
+    address: data.address
+      ? [{
+          text: data.address,
+          ...(data.postalCode ? { postalCode: data.postalCode } : {}),
+          country: 'JP',
+        }]
+      : [{ text: '不明', country: 'JP' }],
   };
 }

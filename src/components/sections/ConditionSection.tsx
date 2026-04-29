@@ -3,6 +3,18 @@ import { FieldWithHelp } from '../common/FieldWithHelp';
 
 const inputClass = 'border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400';
 
+const MEDIS_EXAMPLES: { code: string; display: string }[] = [
+  { code: '20075383', display: '腹痛症' },
+  { code: '20061593', display: '高血圧症' },
+  { code: '20071549', display: '糖尿病' },
+  { code: '20083904', display: '脳梗塞' },
+  { code: '20057913', display: '気管支喘息' },
+  { code: '20073542', display: '肺炎' },
+  { code: '20065604', display: '心不全' },
+  { code: '20058911', display: '狭心症' },
+  { code: '20076630', display: '慢性閉塞性肺疾患' },
+];
+
 interface Props {
   data: ConditionFormData[];
   onChange: (data: ConditionFormData[]) => void;
@@ -13,6 +25,7 @@ const EMPTY_CONDITION = (): ConditionFormData => ({
   id: crypto.randomUUID(),
   name: '',
   icd10Code: '',
+  medisCode: '',
   clinicalStatus: 'active',
   category: 'chief-complaint',
   onsetDate: '',
@@ -37,8 +50,32 @@ export function ConditionSection({ data, onChange, onFocus }: Props) {
               onChange={e => update(cond.id, 'name', e.target.value)}
               onFocus={() => onFocus('condition.name')} placeholder="例: 2型糖尿病" />
           </FieldWithHelp>
+          <FieldWithHelp label="MEDISコード" fhirPath="Condition.code.coding[medisRecordNo].code">
+            <input type="text" className={inputClass + ' w-full'} value={cond.medisCode ?? ''}
+              onChange={e => update(cond.id, 'medisCode', e.target.value)}
+              onFocus={() => onFocus('condition.name')} placeholder="例: 20075383" />
+            <div className="mt-1 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+              <span className="font-semibold">MEDIS標準病名マスタ5.16版の例：</span>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {MEDIS_EXAMPLES.map(ex => (
+                  <button
+                    key={ex.code}
+                    type="button"
+                    onClick={() => {
+                      update(cond.id, 'medisCode', ex.code);
+                      update(cond.id, 'name', ex.display);
+                    }}
+                    className="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 font-mono whitespace-nowrap"
+                    title={ex.display}
+                  >
+                    {ex.code} {ex.display}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </FieldWithHelp>
           <div className="grid grid-cols-2 gap-2">
-            <FieldWithHelp label="ICD-10コード" fhirPath="Condition.code.coding[0].code">
+            <FieldWithHelp label="ICD-10コード" fhirPath="Condition.code.coding[1].code">
               <input type="text" className={inputClass + ' w-full'} value={cond.icd10Code ?? ''}
                 onChange={e => update(cond.id, 'icd10Code', e.target.value)}
                 onFocus={() => onFocus('condition.name')} placeholder="例: E11" />
