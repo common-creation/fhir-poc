@@ -31,9 +31,16 @@ jobs:
       - run: npm run build
 
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          # 明示的に名前を固定して重複を防ぐ
+          name: github-pages
 
-      - uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
         id: deployment
+        with:
+          artifact_name: github-pages
